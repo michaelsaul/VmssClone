@@ -44,7 +44,7 @@ RESOURCE_GROUP_ID=$(az group show -n $RESOURCE_GROUP --query [id] -o tsv)
 echo "Creating source VM."
 az vm create \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-template \
+--name ${VM_NAME}-template \
 --image $IMAGE \
 --admin-username $ADMIN_USERNAME \
 --vnet-name $VNET_NAME \
@@ -53,7 +53,7 @@ az vm create \
 --ssh-key-value $SSH_KEY_VALUE
 
 #Get VM Public IP
-VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name $VM_NAME-template --query "[publicIps]" -o tsv)
+VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template --query "[publicIps]" -o tsv)
 
 #Prepare VM for image capture
 #Directions here: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/capture-image
@@ -89,40 +89,40 @@ EOF
 echo "Deallocating and generalizing VM."
 az vm deallocate \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-template
+--name ${VM_NAME}-template
 
 az vm generalize \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-template
+--name ${VM_NAME}-template
 
 #Capture VM image
 echo "Capturing VM Image."
 az image create \
 --resource-group $RESOURCE_GROUP \
 --name $IMAGE_NAME \
---source $VM_NAME-template
+--source ${VM_NAME}-template
 
 #Cleanup Template VM
 echo "Deleting Template VM Resources."
 
-OS_DISK_ID=$(az vm show --resource-group $RESOURCE_GROUP --name $VM_NAME-template --query storageProfile.osDisk.managedDisk.id -o tsv)
+OS_DISK_ID=$(az vm show --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template --query storageProfile.osDisk.managedDisk.id -o tsv)
 
 az vm delete \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-template \
+--name ${VM_NAME}-template \
 -y
 
 az network nic delete \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-templateVMNic
+--name ${VM_NAME}-templateVMNic
 
 az network nsg delete \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-templateNSG
+--name ${VM_NAME}-templateNSG
 
 az network public-ip delete \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-templatePublicIP
+--name ${VM_NAME}-templatePublicIP
 
 az disk delete \
 --ids $OS_DISK_ID \

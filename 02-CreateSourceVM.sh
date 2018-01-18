@@ -38,7 +38,7 @@ RESOURCE_GROUP_ID=$(az group show -n $RESOURCE_GROUP --query [id] -o tsv)
 echo "Creating new source VM from Image."
 az vm create \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-source \
+--name ${VM_NAME}-source \
 --image $IMAGE_NAME \
 --admin-username $ADMIN_USERNAME \
 --vnet-name $VNET_NAME \
@@ -51,12 +51,12 @@ az vm create \
 echo "Enabling MSI on Resource Group."
 az vm assign-identity \
 --resource-group $RESOURCE_GROUP \
---name $VM_NAME-source \
+--name ${VM_NAME}-source \
 --scope $RESOURCE_GROUP_ID
 
 #Configure scripts on Source VM
 #Get VM Public IP
-VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name $VM_NAME-source --query "[publicIps]" -o tsv)
+VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name ${VM_NAME}-source --query "[publicIps]" -o tsv)
 
 
 #SSH to Server to configure

@@ -69,6 +69,6 @@ az vmss extension set \
 #Update all instances to match model
 echo "Updating VMSS Instances."
 az vmss update-instances \
---resource-group$RESOURCE_GROUP \
+--resource-group $RESOURCE_GROUP \
 --name $VMSS_NAME \
 --instance-ids "*"
