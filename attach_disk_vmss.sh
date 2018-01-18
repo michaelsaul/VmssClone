@@ -24,7 +24,7 @@
 
 #Script Name: attach_disk_vmss.sh
 #Author: Michael Saul
-#Version 0.1
+#Version 0.2
 #Description:
 #  
 
@@ -60,25 +60,33 @@ az disk create \
 DATA_DISK_ID=$(az disk show --resource-group $RESOURCE_GROUP --name ${VM_NAME}_datadisk --query [id] -o tsv)
 
 #Attach the disk
+#MODEL=$(curl -s https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Compute/VirtualMachineScaleSets/${VMSS_NAME}/virtualMachines/${INSTANCE_ID}?api-version=2017-12-01 -H "Authorization: Bearer ${ACCESS_TOKEN}")
 
-BODY=$(cat << EOF
-    "dataDisks": {
-        {
-            "lun": 0,
-            "createOption": "Attach",
-            "caching": "None",
-            "managedDisk": {
-                "storageAccountType": "Premium_LRS",
-                "id": "$DATA_DISK_ID"
-            }
+DATA_DISK=$(cat << EOF
+    {"lun": 0,
+    "createOption": "Attach",
+    "caching": "None",
+    "managedDisk": {
+        "storageAccountType": "Premium_LRS",
+            "id": "$DATA_DISK_ID"
         }
     }
 EOF
 )
 
-curl \
--H "Content-Type: application/json" \
--H "Authorization:Bearer ${ACCESS_TOKEN}" \
--X PUT \
--d "${BODY}" \
-https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Compute/VirtualMachineScaleSets/${VMSS_NAME}/virtualMachines/${INSTANCE_ID}?api-version=2017-12-01
+curl -s \
+    -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+    https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Compute/VirtualMachineScaleSets/${VMSS_NAME}/virtualMachines/${INSTANCE_ID}?api-version=2017-12-01 \
+    | jq ".properties.storageProfile.dataDisks += [${DATA_DISK}]" \
+    | curl \
+    -H "Content-Type: application/json" \
+    -H "Authorization:Bearer ${ACCESS_TOKEN}" \
+    -X PUT \
+    -d @- \
+    https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Compute/VirtualMachineScaleSets/${VMSS_NAME}/virtualMachines/${INSTANCE_ID}?api-version=2017-12-01
+
+    #Update VM from new model
+    az vmss update-instances \
+    --instance-ids $INSTANCE_ID \
+    --name $VMSS_NAME \
+    --resource-group $RESOURCE_GROUP

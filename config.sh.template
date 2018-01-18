@@ -24,12 +24,11 @@
 
 #Script Name: config.sh
 #Author: Michael Saul
-#Version 0.1
+#Version 0.2
 #Description:
 #  This si a template for the configuration variables required to run all of the other scripts. Fill in the appropriate values, and rename to config.sh.
 
 #Setup variables
-SUBSCRIPTION="00000000-0000-0000-0000-000000000000"
 LOCATION="westcentralus"
 RESOURCE_GROUP="RGName"
 VM_NAME="misaul-vmss" #This is the base name for the virtual machiens <VM_NAME>-template and <VM_NAME>-source

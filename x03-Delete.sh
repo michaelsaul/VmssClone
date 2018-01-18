@@ -24,7 +24,7 @@
 
 #Script Name: x03-Delete.sh
 #Author: Michael Saul
-#Version 0.1
+#Version 0.2
 #Description:
 #  
 

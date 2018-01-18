@@ -24,7 +24,7 @@
 
 #Script Name: 01-SetupEnvironment.sh
 #Author: Michael Saul
-#Version 0.1
+#Version 0.2
 #Description:
 #  
 
@@ -68,19 +68,18 @@ VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name ${VM_NAME}-templat
 #
 
 ssh -o StrictHostKeyChecking=no -i $SSH_PRIV_KEY $ADMIN_USERNAME@$VM_IP << EOF
+  #Install EPEL Repo
+  wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  sudo rpm -ivh epel-release-latest-7.noarch.rpm
   #Upgrade packages
   sudo yum -y update
+  #Install jq
+  sudo yum -y install jq
   #Install Azure CLI
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
   sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
   yum check-update
   sudo yum -y install azure-cli
-  #Connect data disk and mount
-  #sudo mkdir -p $MOUNT_POINT
-  #(echo n; echo p; echo 1; echo ; echo ; echo w) | sudo fdisk /dev/sdc
-  #sudo mkfs -t xfs /dev/sdc1
-  #sudo mount /dev/sdc1 $MOUNT_POINT
-  #echo 'Hello World!' | sudo tee $MOUNT_POINT/file1.txt
   #Prepare machine for imaging
   sudo waagent -deprovision+user -force
 EOF
