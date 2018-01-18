@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# The MIT License (MIT)
+#
+# Copyright (c) 2018 Microsoft Azure
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#Script Name: config.sh
+#Author: Michael Saul
+#Version 0.1
+#Description:
+#  This si a template for the configuration variables required to run all of the other scripts. Fill in the appropriate values, and rename to config.sh.
+
+#Setup variables
+SUBSCRIPTION="00000000-0000-0000-0000-000000000000"
+LOCATION="westcentralus"
+RESOURCE_GROUP="RGName"
+VM_NAME="misaul-vmss" #This is the base name for the virtual machiens <VM_NAME>-template and <VM_NAME>-source
+IMAGE="rhel"
+ADMIN_USERNAME="azure"
+MOUNT_POINT="/data"
+VNET_NAME="VnetName"
+SUBNET_NAME="SubnetName"
+VM_SIZE="Standard_F1s"
+SSH_KEY_VALUE="~/.ssh/id_rsa.pub"
+SSH_PRIV_KEY="~/.ssh/id_rsa"
+DATA_DISK_SIZE="32"
+IMAGE_NAME="ImageName"
+VMSS_NAME="VMSSName"
+VMSS_SIZE="3"
+SNAPSHOT_SCRIPT="https://gist.githubusercontent.com/michaelsaul/6e61acf7379cf1bce96e703e9fb49a6d/raw/659ff43c155102c2d65f0d9c1fa75daa4e96ac97/create_snapshots.sh"
