@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#Script Name: x03-Delete.sh
+#Script Name: x04-Delete.sh
 #Author: Michael Saul
 #Version 0.2
 #Description:
@@ -31,7 +31,7 @@
 #Source Config
 source config.sh
 
-echo "Deleting resources from step 03."
+echo "Deleting resources from step 04."
 
 az vmss delete \
 --resource-group $RESOURCE_GROUP \

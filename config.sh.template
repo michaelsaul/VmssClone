@@ -26,13 +26,13 @@
 #Author: Michael Saul
 #Version 0.2
 #Description:
-#  This si a template for the configuration variables required to run all of the other scripts. Fill in the appropriate values, and rename to config.sh.
+#  This is a template for the configuration variables required to run all of the other scripts. Fill in the appropriate values, and rename to config.sh.
 
 #Setup variables
 LOCATION="westcentralus"
 RESOURCE_GROUP="RGName"
-VM_NAME="misaul-vmss" #This is the base name for the virtual machiens <VM_NAME>-template and <VM_NAME>-source
-IMAGE="rhel"
+VM_NAME="VMName" #This is the base name for the virtual machiens <VM_NAME>-template and <VM_NAME>-source
+IMAGE="rhel" #This is the OS Image available in the Azure Marketplace
 ADMIN_USERNAME="azure"
 MOUNT_POINT="/data"
 VNET_NAME="VnetName"
@@ -40,8 +40,9 @@ SUBNET_NAME="SubnetName"
 VM_SIZE="Standard_F1s"
 SSH_KEY_VALUE="~/.ssh/id_rsa.pub"
 SSH_PRIV_KEY="~/.ssh/id_rsa"
-DATA_DISK_SIZE="32"
+DATA_DISK_SIZE="32" #Be sure this value matches the command line arcument in public.json Custom Script Extenstion Config File
 IMAGE_NAME="ImageName"
 VMSS_NAME="VMSSName"
 VMSS_SIZE="3"
 SNAPSHOT_SCRIPT="https://gist.githubusercontent.com/michaelsaul/6e61acf7379cf1bce96e703e9fb49a6d/raw/659ff43c155102c2d65f0d9c1fa75daa4e96ac97/create_snapshots.sh"
+SNAPSHOT_NAME="SnapshotName"

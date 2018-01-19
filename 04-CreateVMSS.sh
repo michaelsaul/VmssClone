@@ -48,14 +48,6 @@ az vmss create \
 --vnet-name $VNET_NAME \
 --subnet $SUBNET_NAME
 
-#Add MSI to VMSS for Resource Group
-echo "Enabling MSI on Resource Group."
-az vmss assign-identity \
---resource-group $RESOURCE_GROUP \
---name $VMSS_NAME \
---role Contributor \
---scope $RESOURCE_GROUP_ID
-
 #Add custom script extension to mount disk
 echo "Executing VM extension."
 az vmss extension set \

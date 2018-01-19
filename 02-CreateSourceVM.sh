@@ -45,7 +45,8 @@ az vm create \
 --subnet $SUBNET_NAME \
 --size $VM_SIZE \
 --ssh-key-value $SSH_KEY_VALUE \
---data-disk-sizes-gb $DATA_DISK_SIZE
+--data-disk-size $DATA_DISK_SIZE \
+--storage-sku Premium_LRS
 
 #Enable VM for MSI
 echo "Enabling MSI on Resource Group."
