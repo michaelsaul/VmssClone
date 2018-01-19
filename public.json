@@ -1,4 +1,4 @@
 {
-    "fileUris": ["https://raw.githubusercontent.com/michaelsaul/VmssDiskAttachPOC/master/public.json"],
+    "fileUris": ["https://raw.githubusercontent.com/michaelsaul/VmssClone/master/public.json"],
     "commandToExecute": "./mount_data_disk.sh /data 64G xfs"
 }
