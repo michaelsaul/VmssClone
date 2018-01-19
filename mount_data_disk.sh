@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 #Script Name: mount_data_disk.sh
 #Author: Michael Saul
