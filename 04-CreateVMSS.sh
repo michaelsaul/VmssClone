@@ -39,7 +39,7 @@ echo "Creating VMSS."
 az vmss create \
 --resource-group $RESOURCE_GROUP \
 --name $VMSS_NAME \
---image $IMAGE_NAME \
+--image ${IMAGE_NAME}2 \
 --instance-count $VMSS_SIZE \
 --admin-username $ADMIN_USERNAME \
 --ssh-key-value $SSH_KEY_VALUE \

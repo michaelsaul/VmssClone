@@ -27,6 +27,6 @@ do
   UUID=$(blkid -s UUID -o value /dev/"$b"1)
   #Skip if UUID already exists in /etc/fstab
   grep -q "^[^#]*$UUID" /etc/fstab && echo "UUID already in /etc/fstab for $b" && continue
-  echo "UUID=$UUID $DATA_DIRECTORY  $FILE_SYSTEM defaults,nofail,barrier=0 1 2" >> /etc/fstab && echo "Added $b to /etc/fstab"
+  echo "UUID=$UUID $DATA_DIRECTORY  $FILE_SYSTEM defaults 1 2" >> /etc/fstab && echo "Added $b to /etc/fstab"
   mount $DATA_DIRECTORY && echo "Mounted $b"
 done

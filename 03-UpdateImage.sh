@@ -75,6 +75,7 @@ ssh -o StrictHostKeyChecking=no -i $SSH_PRIV_KEY $ADMIN_USERNAME@$VM_IP << EOF
   #Upgrade packages
   sudo yum -y update
   #Connect data disk and mount
+  sudo mkdir -p $MOUNT_POINT
   sudo mount /dev/sdc1 $MOUNT_POINT
   #echo 'Hello World!' | sudo tee $MOUNT_POINT/file1.txt
   #Prepare machine for imaging
@@ -91,11 +92,19 @@ az vm generalize \
 --resource-group $RESOURCE_GROUP \
 --name ${VM_NAME}-template2
 
+#Delete VM Image if it exists.
+if [[ $(az image show --resource-group $RESOURCE_GROUP --name ${IMAGE_NAME}2) ]]; then \
+  echo "Deleting previous image."
+  az image delete \
+  --resource-group $RESOURCE_GROUP \
+  --name ${IMAGE_NAME}2
+fi
+
 #Capture VM image
 echo "Capturing VM Image."
 az image create \
 --resource-group $RESOURCE_GROUP \
---name $IMAGE_NAME \
+--name ${IMAGE_NAME}2 \
 --source ${VM_NAME}-template2
 
 #Cleanup Template VM
