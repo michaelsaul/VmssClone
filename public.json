@@ -1,4 +1,4 @@
 {
-    "fileUris": ["https://gist.githubusercontent.com/michaelsaul/1ca32ad2c78bc9787fcfe5d910f27dd0/raw/735af9343224bbfc3041d7bf694d120aa1be871e/mount_data_disk.sh"],
-    "commandToExecute": "./mount_data_disk.sh /data 64G"
+    "fileUris": ["https://raw.githubusercontent.com/michaelsaul/VmssDiskAttachPOC/master/public.json"],
+    "commandToExecute": "./mount_data_disk.sh /data 64G xfs"
 }
