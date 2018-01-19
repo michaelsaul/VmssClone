@@ -46,6 +46,11 @@ RG_NAME=$(az vm show --ids $VM_ID --query "resourceGroup" -o tsv)
 #Get My Data Disk ID
 DATA_DISK_ID=$(az vm show --id $VM_ID --query "storageProfile.dataDisks[0].managedDisk.id" -o tsv)
  
+#Delete existing snapshot
+az snapshot delete \
+--name $SNAPSHOT_NAME \
+--resource-group $RG_NAME \
+
 #Create a Snapshot
 echo "Creating snapshot."
 sudo xfs_freeze -f $MOUNT_POINT
