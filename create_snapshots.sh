@@ -47,9 +47,10 @@ RG_NAME=$(az vm show --ids $VM_ID --query "resourceGroup" -o tsv)
 DATA_DISK_ID=$(az vm show --id $VM_ID --query "storageProfile.dataDisks[0].managedDisk.id" -o tsv)
  
 #Delete existing snapshot
+echo "Deleting existing snapshot."
 az snapshot delete \
 --name $SNAPSHOT_NAME \
---resource-group $RG_NAME \
+--resource-group $RG_NAME
 
 #Create a Snapshot
 echo "Creating snapshot."
