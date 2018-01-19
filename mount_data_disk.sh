@@ -2,7 +2,7 @@
 
 #Script Name: mount_data_disk.sh
 #Author: Michael Saul
-#Version 0.2
+#Version 0.3
 #Description:
 # This script will mount a data disk of a given size, and add the disk to /etc/fstab.
 # To run, use the following syntax: mount_data_disk.sh DATA_DIRECTORY DISK_SIZE

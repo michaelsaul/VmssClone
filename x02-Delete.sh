@@ -24,7 +24,7 @@
 
 #Script Name: x02-Delete.sh
 #Author: Michael Saul
-#Version 0.2
+#Version 0.3
 #Description:
 #  
 

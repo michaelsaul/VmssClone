@@ -24,7 +24,7 @@
 
 #Script Name: config.sh
 #Author: Michael Saul
-#Version 0.2
+#Version 0.3
 #Description:
 #  This is a template for the configuration variables required to run all of the other scripts. Fill in the appropriate values, and rename to config.sh.
 

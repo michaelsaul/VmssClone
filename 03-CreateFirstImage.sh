@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#Script Name: 01-SetupEnvironment.sh
+#Script Name: 03-CreateFirstImage.sh
 #Author: Michael Saul
 #Version 0.3
 #Description:
@@ -31,30 +31,33 @@
 #Source Config
 source config.sh
 
-#Create Resource Group
-echo "Creating Resource Group."
-az group create \
---name $RESOURCE_GROUP \
---location $LOCATION
+#Create a disk from the latest snapshot
+echo "Creating disk from latest snapshot."
+az disk create \
+--resource-group $RESOURCE_GROUP \
+--name ${VM_NAME}-template2_disk2 \
+--source $SNAPSHOT_NAME \
+--sku Premium_LRS \
+--size $DATA_DISK_SIZE \
 
-#Get Resource Group ID
-RESOURCE_GROUP_ID=$(az group show -n $RESOURCE_GROUP --query [id] -o tsv)
+#Create a VM from the image and connect the new disk
 
 #Create source VM
-echo "Creating source VM."
+echo "Creating template2 VM."
 az vm create \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-template \
---image $IMAGE \
+--name ${VM_NAME}-template2 \
+--image $IMAGE_NAME \
 --admin-username $ADMIN_USERNAME \
 --vnet-name $VNET_NAME \
 --subnet $SUBNET_NAME \
 --size $VM_SIZE \
 --ssh-key-value $SSH_KEY_VALUE \
+--attach-data-disks ${VM_NAME}-template2_disk2 \
 --storage-sku Premium_LRS
 
 #Get VM Public IP
-VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template --query "[publicIps]" -o tsv)
+VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template2 --query "[publicIps]" -o tsv)
 
 #Prepare VM for image capture
 #Directions here: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/capture-image
@@ -69,17 +72,12 @@ VM_IP=$(az vm show -d --resource-group $RESOURCE_GROUP --name ${VM_NAME}-templat
 #
 
 ssh -o StrictHostKeyChecking=no -i $SSH_PRIV_KEY $ADMIN_USERNAME@$VM_IP << EOF
-  #Install EPEL Repo
-  wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-  sudo rpm -ivh epel-release-latest-7.noarch.rpm
   #Upgrade packages
   sudo yum -y update
-  #Install jq
-  sudo yum -y install jq
-  #Install Azure CLI
-  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-  sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
-  sudo yum -y install azure-cli
+  #Connect data disk and mount
+  sudo mkdir -p $MOUNT_POINT
+  sudo mount /dev/sdc1 $MOUNT_POINT
+  #echo 'Hello World!' | sudo tee $MOUNT_POINT/file1.txt
   #Prepare machine for imaging
   sudo waagent -deprovision+user -force
 EOF
@@ -88,41 +86,54 @@ EOF
 echo "Deallocating and generalizing VM."
 az vm deallocate \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-template
+--name ${VM_NAME}-template2
 
 az vm generalize \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-template
+--name ${VM_NAME}-template2
+
+#Delete VM Image if it exists.
+if [[ $(az image show --resource-group $RESOURCE_GROUP --name ${IMAGE_NAME}2) ]]; then
+  echo "Deleting previous image."
+  az image delete \
+  --resource-group $RESOURCE_GROUP \
+  --name ${IMAGE_NAME}2
+fi
 
 #Capture VM image
 echo "Capturing VM Image."
 az image create \
 --resource-group $RESOURCE_GROUP \
---name $IMAGE_NAME \
---source ${VM_NAME}-template
+--name ${IMAGE_NAME}2 \
+--source ${VM_NAME}-template2
 
 #Cleanup Template VM
 echo "Deleting Template VM Resources."
 
-OS_DISK_ID=$(az vm show --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template --query storageProfile.osDisk.managedDisk.id -o tsv)
+OS_DISK_ID=$(az vm show --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template2 --query storageProfile.osDisk.managedDisk.id -o tsv)
+DATA_DISK_ID=$(az vm show --resource-group $RESOURCE_GROUP --name ${VM_NAME}-template2 --query storageProfile.dataDisks[0].managedDisk.id -o tsv)
 
 az vm delete \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-template \
+--name ${VM_NAME}-template2 \
 -y
 
 az network nic delete \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-templateVMNic
+--name ${VM_NAME}-template2VMNic
 
 az network nsg delete \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-templateNSG
+--name ${VM_NAME}-template2NSG
 
 az network public-ip delete \
 --resource-group $RESOURCE_GROUP \
---name ${VM_NAME}-templatePublicIP
+--name ${VM_NAME}-template2PublicIP
 
 az disk delete \
 --ids $OS_DISK_ID \
+-y
+
+az disk delete \
+--ids $DATA_DISK_ID \
 -y

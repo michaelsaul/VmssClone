@@ -24,7 +24,7 @@
 
 #Script Name: create_snapshots.sh
 #Author: Michael Saul
-#Version 0.2
+#Version 0.3
 #Description:
 #  
 

@@ -22,14 +22,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#Script Name: 03-UpdateImage.sh
+#Script Name: 05-UpdateImage.sh
 #Author: Michael Saul
-#Version 0.2
+#Version 0.3
 #Description:
 #  
 
 #Source Config
 source config.sh
+
+#Get the curent VMSS Image URI
+IMAGE_ID=$(az vmss show --resource-group $RESOURCE_GROUP --name $VMSS_NAME --query virtualMachineProfile.storageProfile.imageReference.id -o tsv)
+IMAGE_SUFFIX=${IMAGE_ID: -2}
+
+case $IMAGE_SUFFIX in
+"-a")
+  echo "Currently using -a image, swaping to -b image."
+  SUFFIX="-b"
+  ;;
+"-b")
+  echo "Currently using -b image, swaping to -a image."
+  SUFFIX="-a"
+  ;;
+*)
+  echo "I'm not sure which image the VMSS is using, let's start with -a."
+  SUFFIX="-a"
+  ;;
+esac
 
 #Create a disk from the latest snapshot
 echo "Creating disk from latest snapshot."
@@ -93,19 +112,29 @@ az vm generalize \
 --name ${VM_NAME}-template2
 
 #Delete VM Image if it exists.
-if [[ $(az image show --resource-group $RESOURCE_GROUP --name ${IMAGE_NAME}2) ]]; then \
+if [[ $(az image show --resource-group $RESOURCE_GROUP --name ${IMAGE_NAME}${SUFFIX}) ]]; then
   echo "Deleting previous image."
   az image delete \
   --resource-group $RESOURCE_GROUP \
-  --name ${IMAGE_NAME}2
+  --name ${IMAGE_NAME}${SUFFIX}
 fi
 
 #Capture VM image
 echo "Capturing VM Image."
 az image create \
 --resource-group $RESOURCE_GROUP \
---name ${IMAGE_NAME}2 \
+--name ${IMAGE_NAME}${SUFFIX} \
 --source ${VM_NAME}-template2
+
+#Get the Image id
+IMAGE_ID=$(az image show --resource-group $RESOURCE_GROUP --name ${IMAGE_NAME}${SUFFIX} --query id -o tsv)
+
+#Update VMSS Model to point to new Image
+echo "Updating VMSS Model."
+az vmss update \
+--resource-group $RESOURCE_GROUP \
+--name $VMSS_NAME \
+--set virtualMachineProfile.storageProfile.imageReference.id="${IMAGE_ID}"
 
 #Cleanup Template VM
 echo "Deleting Template VM Resources."
